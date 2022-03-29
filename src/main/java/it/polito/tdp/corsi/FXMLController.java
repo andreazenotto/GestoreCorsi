@@ -5,8 +5,15 @@
 package it.polito.tdp.corsi;
 
 import java.net.URL;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+
+import it.polito.tdp.corsi.model.Corso;
+import it.polito.tdp.corsi.model.Divisione;
 import it.polito.tdp.corsi.model.Model;
+import it.polito.tdp.corsi.model.Studente;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -46,22 +53,73 @@ public class FXMLController {
 
     @FXML
     void corsiPerPeriodo(ActionEvent event) {
-    	
+    	this.txtRisultato.clear();
+    	String periodo = this.txtPeriodo.getText();
+    	int periodoNumerico;
+    	try {
+    		periodoNumerico = Integer.parseInt(periodo);
+    	} catch(NumberFormatException e) {
+    		this.txtRisultato.setText("Inserisci un periodo numerico");
+    		return;
+    	}
+    	if(periodoNumerico!=1 && periodoNumerico!=2) {
+    		this.txtRisultato.setText("Inserisci 1 oppure 2");
+    		return;
+    	}
+		List<Corso> corsi = this.model.getCorsiByPeriodo(periodoNumerico);
+		for(Corso c: corsi) {
+			this.txtRisultato.appendText(c.toString()+"\n");
+		}
     }
 
     @FXML
     void numeroStudenti(ActionEvent event) {
-    	
+    	this.txtRisultato.clear();
+    	String periodo = this.txtPeriodo.getText();
+    	int periodoNumerico;
+    	try {
+    		periodoNumerico = Integer.parseInt(periodo);
+    	} catch(NumberFormatException e) {
+    		this.txtRisultato.setText("Inserisci un periodo numerico");
+    		return;
+    	}
+    	if(periodoNumerico!=1 && periodoNumerico!=2) {
+    		this.txtRisultato.setText("Inserisci 1 oppure 2");
+    		return;
+    	}
+		Map<Corso,Integer> iscritti = this.model.getIscritti(periodoNumerico);
+		for(Corso c: iscritti.keySet()) {
+			this.txtRisultato.appendText(c.toString()+" "+iscritti.get(c)+"\n");
+		}
     }
 
     @FXML
     void stampaDivisione(ActionEvent event) {
-
+    	this.txtRisultato.clear();
+    	String codins = this.txtCorso.getText(); 
+    	if(codins.isBlank()) {
+    		this.txtRisultato.setText("Inserisci il nome di un corso");
+    		return;
+    	}
+		List<Divisione> divisioneStudenti = this.model.getDivisioneStudenti(codins);
+		divisioneStudenti.sort(Comparator.comparing(Divisione::getN));
+		for(Divisione d: divisioneStudenti) {
+			this.txtRisultato.appendText(d.toString()+"\n");
+		}
     }
 
     @FXML
     void stampaStudenti(ActionEvent event) {
-
+    	this.txtRisultato.clear();
+    	String codins = this.txtCorso.getText(); 
+    	if(codins.isBlank()) {
+    		this.txtRisultato.setText("Inserisci il nome di un corso");
+    		return;
+    	}
+		List<Studente> studenti = this.model.getStudentiByCorso(codins);
+		for(Studente s: studenti) {
+			this.txtRisultato.appendText(s.toString()+"\n");
+		}
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
